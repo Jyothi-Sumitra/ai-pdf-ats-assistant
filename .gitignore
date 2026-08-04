@@ -1,8 +1,18 @@
+# Environment variables
 .env
+
+# Virtual environment
 .venv/
-venv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Vector database
 chroma_db/
+
+# User uploaded PDFs
+data/uploads/
+
+# IDE
 .vscode/
-.idea/
