@@ -4,4 +4,4 @@ version = "1.0.0"
 requires-python = ">=3.13"
 
 [tool.vercel]
-entrypoint = "web_app.py:app"
+entrypoint = "web_app:app"
