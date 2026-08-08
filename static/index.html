@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI PDF Assistant</title>
-
-    <link rel="stylesheet" href="/static/style.css">
-
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>AI PDF Assistant</title>
 
@@ -20,8 +17,10 @@
         href="/static/favicon.svg"
     >
 
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
 </head>
 
 <body>
@@ -32,215 +31,342 @@
 
     <aside class="sidebar">
 
-        <div class="sidebar-top">
+    <!-- ================= TOP ================= -->
 
-            <div class="brand">
-                <div class="brand-icon">✦</div>
+    <div class="sidebar-top">
 
-                <div>
-                    <h2>PDF AI</h2>
-                    <p>Document Intelligence</p>
-                </div>
-            </div>
+        <div class="brand">
 
-            <button class="new-chat-button">
-                <span>＋</span>
-                New Chat
-            </button>
-
-        </div>
-
-
-        <!-- Document Section -->
-
-        <div class="sidebar-section">
-
-            <p class="section-label">DOCUMENT</p>
-
-            <label for="pdf-upload" class="sidebar-upload">
-                <span class="sidebar-upload-icon">＋</span>
-                <span>Upload PDF</span>
-            </label>
-
-            <input
-                type="file"
-                id="pdf-upload"
-                accept=".pdf"
-                hidden
-            >
-
-            <div id="file-info" class="file-info">
-                No document uploaded
-            </div>
-
-        </div>
-
-
-        <!-- Quick Actions -->
-
-        <div class="sidebar-section">
-
-            <p class="section-label">QUICK ACTIONS</p>
-
-            <button class="quick-action" data-question="Summarize this document">
-                <span>✦</span>
-                Summarize
-            </button>
-
-            <button class="quick-action" data-question="What are the key topics in this document?">
-                <span>◇</span>
-                Key Topics
-            </button>
-
-            <button class="quick-action" data-question="Explain the main ideas in simple terms">
-                <span>◎</span>
-                Explain Simply
-            </button>
-
-        </div>
-
-
-        <!-- Sidebar Footer -->
-
-        <div class="sidebar-footer">
-
-            <div class="footer-avatar">AI</div>
+            <div class="brand-icon">✦</div>
 
             <div>
-                <strong>PDF Assistant</strong>
-                <p>Powered by RAG</p>
+                <h2>PDF AI</h2>
+                <p>Document Intelligence</p>
             </div>
 
         </div>
 
-    </aside>
+        <button class="new-chat-button">
+            <span>＋</span>
+            New Chat
+        </button>
+
+    </div>
 
 
-    <!-- ================= MAIN AREA ================= -->
+    <!-- ================= DOCUMENTS ================= -->
+
+    <div class="sidebar-section">
+
+        <p class="section-label">
+            DOCUMENTS
+        </p>
+
+        <!-- Upload Button -->
+
+        <label
+            for="pdf-upload"
+            class="sidebar-upload"
+        >
+            <span class="sidebar-upload-icon">
+                ＋
+            </span>
+
+            <span>
+                Upload PDF
+            </span>
+        </label>
+
+        <!-- Hidden File Input -->
+
+        <input
+            type="file"
+            id="pdf-upload"
+            accept=".pdf"
+            hidden
+        >
+
+        <!-- Hidden upload status -->
+
+        <div
+            id="file-info"
+            class="file-info"
+            hidden
+        ></div>
+
+        <!-- Uploaded PDF List -->
+
+        <div
+            id="document-list"
+            class="document-list"
+        >
+
+            <!-- JavaScript will add PDFs here -->
+
+            <!-- Example:
+            <div class="document-item active">
+                📄 AI_Research.pdf
+            </div>
+
+            <div class="document-item">
+                📄 Linguaskill.pdf
+            </div>
+            -->
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <div class="sidebar-section">
+
+        <p class="section-label">
+            QUICK ACTIONS
+        </p>
+
+        <button
+            class="quick-action"
+            data-question="Summarize this document"
+        >
+            <span>✦</span>
+            Summarize
+        </button>
+
+        <button
+            class="quick-action"
+            data-question="What are the key topics in this document?"
+        >
+            <span>◇</span>
+            Key Topics
+        </button>
+
+        <button
+            class="quick-action"
+            data-question="Explain the main ideas in simple terms"
+        >
+            <span>◎</span>
+            Explain Simply
+        </button>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <div class="sidebar-footer">
+
+        <div class="footer-avatar">
+            AI
+        </div>
+
+        <div>
+
+            <strong>
+                PDF Assistant
+            </strong>
+
+            <p>
+                Powered by RAG
+            </p>
+
+        </div>
+
+    </div>
+
+</aside>
+
 
     <main class="main-content">
 
-        <!-- Top Navigation -->
+    <!-- ================= TOP NAVIGATION ================= -->
 
-        <header class="topbar">
+    <header class="topbar">
+        <div class="model-badge">
+            <span class="status-dot"></span>
+            RAG Assistant
+        </div>
 
-            <div class="model-badge">
-                <span class="status-dot"></span>
-                RAG Assistant
-            </div>
+        <div
+            id="status"
+            class="document-status"
+        >
+            No document
+        </div>
+    </header>
 
-            <div id="status" class="document-status">
-                No document
-            </div>
+    <!-- ================= CHAT ================= -->
 
-        </header>
+    <section
+        id="chat-messages"
+        class="chat-messages"
+    >
 
+        <!-- ================= INITIAL LANDING SCREEN ================= -->
 
-        <!-- ================= CHAT ================= -->
+        <div class="welcome-message">
 
-        <section id="chat-messages" class="chat-messages">
+            <!-- Hero Orb -->
 
-            <!-- Initial Landing Screen -->
+            <div class="hero-orb">
 
-            <div class="welcome-message">
-
-                <div class="hero-orb">
-                    <div class="orb-core">✦</div>
+                <div class="orb-core">
+                    ✦
                 </div>
 
-                <h1>Chat with your documents</h1>
+            </div>
 
-                <p class="welcome-subtitle">
-                    Upload a PDF and turn it into an interactive knowledge base.
-                    Ask questions, discover key ideas, or generate a summary.
-                </p>
+            <!-- Heading -->
 
+            <h1>
+                Chat with your documents
+            </h1>
 
-                <!-- Main Composer -->
+            <p class="welcome-subtitle">
 
-                <div class="hero-composer">
+                Upload a PDF and turn it into an interactive
+                knowledge base. Ask questions, discover key ideas,
+                or generate a summary.
 
-                    <textarea
-                        id="question-input"
-                        placeholder="Upload a PDF to start asking questions..."
-                        rows="2"
-                        disabled
-                    ></textarea>
+            </p>
 
+            <!-- ================= HERO COMPOSER ================= -->
 
-                    <div class="composer-footer">
+            <div class="hero-composer">
 
-                        <label for="pdf-upload" class="attach-button">
-                            <span>⌁</span>
-                            Attach PDF
-                        </label>
+                <textarea
+                    id="question-input"
+                    placeholder="Upload a PDF to start asking questions..."
+                    rows="2"
+                    disabled
+                ></textarea>
+
+                <div class="composer-footer">
+
+                    <div class="input-tools">
+
+                        <div class="document-selector">
+                            <span class="document-icon">📄</span>
+
+                            <select
+                                id="document-select"
+                                aria-label="Select PDF document"
+                            ></select>
+
+                            <span class="select-chevron" aria-hidden="true">
+                                ▾
+                            </span>
+
+                        </div>
 
                         <button
-                            id="send-button"
-                            class="send-button"
-                            disabled
-                            aria-label="Send message"
+                            id="web-search-toggle"
+                            class="tool-button"
+                            aria-pressed="false"
                         >
-                            ↑
+                            🌐 Web Search
                         </button>
 
                     </div>
 
-                </div>
-
-
-                <!-- Suggestion Cards -->
-
-                <div class="suggestion-grid">
-
                     <button
-                        class="suggestion-card"
-                        data-question="Summarize this document"
+                        id="send-button"
+                        class="send-button"
                     >
-                        <span class="suggestion-icon">✦</span>
-
-                        <div>
-                            <strong>Summarize</strong>
-                            <p>Get a concise document overview</p>
-                        </div>
-                    </button>
-
-
-                    <button
-                        class="suggestion-card"
-                        data-question="What are the key topics in this document?"
-                    >
-                        <span class="suggestion-icon">◇</span>
-
-                        <div>
-                            <strong>Key Topics</strong>
-                            <p>Discover the important concepts</p>
-                        </div>
-                    </button>
-
-
-                    <button
-                        class="suggestion-card"
-                        data-question="Explain the main ideas in simple terms"
-                    >
-                        <span class="suggestion-icon">◎</span>
-
-                        <div>
-                            <strong>Explain</strong>
-                            <p>Break down complex information</p>
-                        </div>
+                        ➤
                     </button>
 
                 </div>
 
             </div>
 
-        </section>
+            <!-- ================= SUGGESTION CARDS ================= -->
 
+            <div class="suggestion-grid">
 
-        <!-- ================= BOTTOM CHAT INPUT ================= -->
+                <button
+                    class="suggestion-card"
+                    data-question="Summarize this document"
+                >
 
-        <div class="bottom-input-container">
+                    <span class="suggestion-icon">
+                        ✦
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Summarize
+                        </strong>
+
+                        <p>
+                            Get a concise document overview
+                        </p>
+
+                    </div>
+
+                </button>
+
+                <button
+                    class="suggestion-card"
+                    data-question="What are the key topics in this document?"
+                >
+
+                    <span class="suggestion-icon">
+                        ◇
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Key Topics
+                        </strong>
+
+                        <p>
+                            Discover the important concepts
+                        </p>
+
+                    </div>
+
+                </button>
+
+                <button
+                    class="suggestion-card"
+                    data-question="Explain the main ideas in simple terms"
+                >
+
+                    <span class="suggestion-icon">
+                        ◎
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Explain
+                        </strong>
+
+                        <p>
+                            Break down complex information
+                        </p>
+
+                    </div>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================= FOLLOW-UP COMPOSER ================= -->
+
+    <div
+        id="bottom-input-container"
+        class="bottom-input-container"
+        hidden
+    >
 
             <div class="bottom-chat-input">
 
@@ -267,12 +393,17 @@
 
         </div>
 
-    </main>
+    <!-- </main> -->
 
-</div>
+    </div>
+    
+</main>
 
+
+<!-- ================= JAVASCRIPT ================= -->
 
 <script src="/static/script.js"></script>
 
 </body>
+
 </html>

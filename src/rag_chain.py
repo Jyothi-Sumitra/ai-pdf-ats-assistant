@@ -56,8 +56,25 @@ def ask_question(retriever, llm, question, chat_history):
 
     messages = prompt.format_messages(context=context, question=question)
     response = llm.invoke(messages)
-    pages = sorted(set(doc.metadata.get("page", 0) + 1 for doc in docs))
+    answer = response.content
 
-    sources = ", ".join(str(page) for page in pages)
+    if "i couldn't find that information in the document." in answer.lower():
+        return answer
 
-    return f"{response.content}\n\n📄 Sources: Page(s) {sources}"
+    pages = sorted(
+        set(
+            doc.metadata["page"] + 1
+            for doc in docs
+            if "page" in doc.metadata
+        )
+    )
+
+    if pages:
+        sources = ", ".join(str(page) for page in pages)
+
+        return (
+            f"{answer}"
+            f"\n\n📄 Sources: Page(s) {sources}"
+        )
+
+    return answer
