@@ -1,0 +1,751 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #0b0b0f;
+
+    color: #f1f1f1;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* ==================================================
+   PAGE
+   ================================================== */
+
+.ats-page {
+    min-height: 100vh;
+}
+
+
+/* ==================================================
+   TOP BAR
+   ================================================== */
+
+.ats-topbar {
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+
+    background: rgba(11,11,15,0.9);
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #aaa;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    transition: color 0.2s ease;
+}
+
+.back-button:hover {
+    color: white;
+}
+
+.ats-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ats-brand-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,0.08);
+
+    font-size: 17px;
+}
+
+.ats-brand h1 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+.ats-brand p {
+    margin: 2px 0 0;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+/* ==================================================
+   MAIN
+   ================================================== */
+
+.ats-main {
+    width: min(1050px, calc(100% - 40px));
+
+    margin: 0 auto;
+
+    padding: 70px 0 100px;
+}
+
+
+/* ==================================================
+   HERO
+   ================================================== */
+
+.ats-hero {
+    text-align: center;
+
+    max-width: 720px;
+
+    margin: 0 auto 55px;
+}
+
+.hero-badge {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    margin-bottom: 18px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 100px;
+
+    background: rgba(255,255,255,0.04);
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+.ats-hero h2 {
+    margin: 0;
+
+    font-size: clamp(34px, 5vw, 56px);
+
+    line-height: 1.08;
+
+    letter-spacing: -1.8px;
+}
+
+.ats-hero p {
+    max-width: 600px;
+
+    margin: 22px auto 0;
+
+    color: #8d8d94;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+
+/* ==================================================
+   UPLOAD
+   ================================================== */
+
+.upload-section {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+}
+
+.upload-card {
+    padding: 24px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.025);
+}
+
+.upload-card-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 22px;
+}
+
+.upload-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: rgba(255,255,255,0.07);
+}
+
+.upload-card h3 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+.upload-card-header p {
+    margin: 4px 0 0;
+
+    color: #777;
+
+    font-size: 12px;
+}
+
+.drop-zone {
+    min-height: 190px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border: 1px dashed rgba(255,255,255,0.16);
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.02);
+
+    color: #aaa;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.drop-zone:hover {
+    background: rgba(255,255,255,0.045);
+
+    border-color: rgba(255,255,255,0.3);
+}
+
+.drop-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 4px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.07);
+
+    font-size: 18px;
+}
+
+.drop-zone strong {
+    color: #ddd;
+
+    font-size: 14px;
+}
+
+.drop-zone span {
+    color: #666;
+
+    font-size: 12px;
+}
+
+.selected-file {
+    min-height: 20px;
+
+    margin-top: 12px;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    text-align: center;
+}
+
+
+/* ==================================================
+   ANALYZE BUTTON
+   ================================================== */
+
+.analyze-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin-top: 24px;
+
+    padding: 15px 20px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background: #f1f1f1;
+
+    color: #0b0b0f;
+
+    font-weight: 600;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.analyze-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.analyze-button:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+}
+
+
+/* ==================================================
+   LOADING
+   ================================================== */
+
+.loading-section {
+    text-align: center;
+
+    padding: 80px 20px;
+}
+
+.loader {
+    width: 38px;
+    height: 38px;
+
+    margin: 0 auto 20px;
+
+    border: 3px solid rgba(255,255,255,0.1);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-section h3 {
+    margin: 0 0 8px;
+}
+
+.loading-section p {
+    margin: 0;
+
+    color: #777;
+}
+
+
+/* ==================================================
+   ERROR
+   ================================================== */
+
+.error-message {
+    margin-top: 20px;
+
+    padding: 14px 18px;
+
+    border: 1px solid rgba(255,80,80,0.2);
+
+    border-radius: 10px;
+
+    background: rgba(255,60,60,0.06);
+
+    color: #ff9c9c;
+
+    font-size: 13px;
+}
+
+
+/* ==================================================
+   RESULTS
+   ================================================== */
+
+.results {
+    margin-top: 50px;
+}
+
+.score-card {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 38px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.025);
+}
+
+.result-label {
+    color: #777;
+
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+}
+
+.score-value {
+    margin-top: 7px;
+
+    font-size: 68px;
+
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+.score-max {
+    color: #666;
+
+    font-size: 20px;
+}
+
+.match-level {
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    background: rgba(255,255,255,0.07);
+
+    color: #ddd;
+
+    font-size: 12px;
+}
+
+.score-ring {
+    width: 130px;
+    height: 130px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px;
+
+    background: conic-gradient(
+        #f1f1f1 var(--score-progress, 0%),
+        rgba(255,255,255,0.1) var(--score-progress, 0%) 100%
+    );
+
+    border-radius: 50%;
+
+    transition: background 0.05s linear;
+}
+
+.score-ring-inner {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #0b0b0f;
+
+    text-align: center;
+}
+
+.score-ring-inner span {
+    font-size: 25px;
+
+    font-weight: 700;
+}
+
+
+/* ==================================================
+   RESULT CARDS
+   ================================================== */
+
+.result-card {
+    padding: 28px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.025);
+}
+
+.result-card-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 20px;
+}
+
+.result-card-header h3 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+.result-card-header p {
+    margin: 4px 0 0;
+
+    color: #666;
+
+    font-size: 12px;
+}
+
+.result-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,0.07);
+}
+
+.result-icon.success {
+    color: #9de5b1;
+}
+
+.result-icon.warning {
+    color: #f1c777;
+}
+
+.result-icon.recommendation {
+    font-size: 15px;
+}
+
+
+/* ==================================================
+   TAGS
+   ================================================== */
+
+.tag-container {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.tag {
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    background: rgba(255,255,255,0.055);
+
+    color: #bbb;
+
+    font-size: 12px;
+}
+
+.tag.match {
+    color: #b9e7c5;
+
+    background: rgba(100,200,130,0.08);
+}
+
+.tag.missing {
+    color: #e7c68e;
+
+    background: rgba(220,170,80,0.08);
+}
+
+
+/* ==================================================
+   TWO COLUMN
+   ================================================== */
+
+.two-column {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+}
+
+
+/* ==================================================
+   EXPERIENCE
+   ================================================== */
+
+.experience-text {
+    margin: 0;
+
+    color: #aaa;
+
+    line-height: 1.8;
+
+    font-size: 14px;
+}
+
+
+/* ==================================================
+   LISTS
+   ================================================== */
+
+.result-list {
+    margin: 0;
+
+    padding-left: 20px;
+
+    color: #aaa;
+
+    line-height: 1.8;
+
+    font-size: 14px;
+}
+
+.result-list li {
+    margin-bottom: 8px;
+}
+
+
+/* ==================================================
+   NEW ANALYSIS
+   ================================================== */
+
+.new-analysis-button {
+    display: block;
+
+    margin: 30px auto 0;
+
+    padding: 12px 18px;
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #aaa;
+
+    font-size: 13px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.new-analysis-button:hover {
+    background: rgba(255,255,255,0.05);
+
+    color: white;
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 750px) {
+
+    .ats-topbar {
+        padding: 0 20px;
+    }
+
+    .ats-main {
+        width: min(100% - 28px, 650px);
+
+        padding-top: 45px;
+    }
+
+    .upload-section,
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    .score-card {
+        padding: 25px;
+    }
+
+    .score-ring {
+        width: 95px;
+        height: 95px;
+
+        padding: 6px;
+    }
+
+    .score-value {
+        font-size: 52px;
+    }
+
+}

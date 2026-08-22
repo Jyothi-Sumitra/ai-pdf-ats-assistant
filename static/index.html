@@ -51,6 +51,19 @@
             New Chat
         </button>
 
+        <a
+            href="/ats-analysis"
+            class="ats-analysis-button"
+        >
+            <span class="ats-analysis-icon">
+                ◈
+            </span>
+
+            <span>
+                ATS Analysis
+            </span>
+        </a>
+
     </div>
 
 
@@ -249,21 +262,13 @@
                         <div class="document-selector">
                             <span class="document-icon">📄</span>
 
-                            <select
-                                id="document-select"
-                                aria-label="Select PDF document"
-                            ></select>
-
-                            <span class="select-chevron" aria-hidden="true">
-                                ▾
-                            </span>
+                            <select id="document-select"></select>
 
                         </div>
 
                         <button
                             id="web-search-toggle"
                             class="tool-button"
-                            aria-pressed="false"
                         >
                             🌐 Web Search
                         </button>
@@ -362,11 +367,10 @@
 
     <!-- ================= FOLLOW-UP COMPOSER ================= -->
 
-    <div
-        id="bottom-input-container"
+        <div
+        id="bottom-composer"
         class="bottom-input-container"
-        hidden
-    >
+        style="display:none;">
 
             <div class="bottom-chat-input">
 
@@ -393,8 +397,6 @@
 
         </div>
 
-    <!-- </main> -->
-
     </div>
     
 </main>
@@ -402,7 +404,7 @@
 
 <!-- ================= JAVASCRIPT ================= -->
 
-<script src="/static/script.js"></script>
+<script src="/static/script.js?v=2"></script>
 
 </body>
 

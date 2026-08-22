@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ATS Analysis | PDF AI</title>
+
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="/static/favicon.svg"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/ats.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="ats-page">
+
+    <!-- ==================================================
+         TOP BAR
+         ================================================== -->
+
+    <header class="ats-topbar">
+
+        <a
+            href="/"
+            class="back-button"
+        >
+            ←
+            <span>PDF AI</span>
+        </a>
+
+        <div class="ats-brand">
+
+            <div class="ats-brand-icon">
+                ◈
+            </div>
+
+            <div>
+
+                <h1>
+                    ATS Resume Analyzer
+                </h1>
+
+                <p>
+                    Resume intelligence
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         MAIN
+         ================================================== -->
+
+    <main class="ats-main">
+
+        <!-- ==================================================
+             HERO
+             ================================================== -->
+
+        <section class="ats-hero">
+
+            <div class="hero-badge">
+                ✦ AI-Powered Analysis
+            </div>
+
+            <h2>
+                See how well your resume
+                matches the job.
+            </h2>
+
+            <p>
+                Upload your resume and the job description.
+                We'll analyze skills, keywords, experience,
+                strengths, and areas to improve.
+            </p>
+
+        </section>
+
+
+        <!-- ==================================================
+             UPLOAD SECTION
+             ================================================== -->
+
+        <section
+            id="upload-section"
+            class="upload-section"
+        >
+
+            <!-- RESUME -->
+
+            <div class="upload-card">
+
+                <div class="upload-card-header">
+
+                    <div class="upload-icon">
+                        📄
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Resume
+                        </h3>
+
+                        <p>
+                            Upload your current resume
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <label
+                    for="resume-input"
+                    class="drop-zone"
+                    id="resume-drop-zone"
+                >
+
+                    <div class="drop-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Choose resume PDF
+                    </strong>
+
+                    <span>
+                        or drag and drop
+                    </span>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="resume-input"
+                    accept=".pdf"
+                    hidden
+                >
+
+                <div
+                    id="resume-file"
+                    class="selected-file"
+                ></div>
+
+            </div>
+
+
+            <!-- JOB DESCRIPTION -->
+
+            <div class="upload-card">
+
+                <div class="upload-card-header">
+
+                    <div class="upload-icon">
+                        💼
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Job Description
+                        </h3>
+
+                        <p>
+                            Upload the job you're applying for
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <label
+                    for="jd-input"
+                    class="drop-zone"
+                    id="jd-drop-zone"
+                >
+
+                    <div class="drop-icon">
+                        ↑
+                    </div>
+
+                    <strong>
+                        Choose job description PDF
+                    </strong>
+
+                    <span>
+                        or drag and drop
+                    </span>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="jd-input"
+                    accept=".pdf"
+                    hidden
+                >
+
+                <div
+                    id="jd-file"
+                    class="selected-file"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             ANALYZE BUTTON
+             ================================================== -->
+
+        <button
+            id="analyze-button"
+            class="analyze-button"
+            disabled
+        >
+
+            <span>
+                ✦
+            </span>
+
+            Analyze Resume
+
+        </button>
+
+
+        <!-- ==================================================
+             LOADING
+             ================================================== -->
+
+        <section
+            id="loading"
+            class="loading-section"
+            hidden
+        >
+
+            <div class="loader"></div>
+
+            <h3>
+                Analyzing your resume...
+            </h3>
+
+            <p>
+                Comparing skills, experience,
+                and job requirements.
+            </p>
+
+        </section>
+
+
+        <!-- ==================================================
+             ERROR
+             ================================================== -->
+
+        <div
+            id="error-message"
+            class="error-message"
+            hidden
+        ></div>
+
+
+        <!-- ==================================================
+             RESULTS
+             ================================================== -->
+
+        <section
+            id="results"
+            class="results"
+            hidden
+        >
+
+            <!-- SCORE -->
+
+            <div class="score-card">
+
+                <div>
+
+                    <span class="result-label">
+                        YOUR ATS SCORE
+                    </span>
+
+                    <div class="score-value">
+
+                        <span id="score">
+                            0
+                        </span>
+
+                        <span class="score-max">
+                            /100
+                        </span>
+
+                    </div>
+
+                    <div
+                        id="match-level"
+                        class="match-level"
+                    >
+                        Strong Match
+                    </div>
+
+                </div>
+
+                <div class="score-ring">
+
+                    <div class="score-ring-inner">
+
+                        <span id="ring-score">
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MATCHING SKILLS -->
+
+            <div class="result-card">
+
+                <div class="result-card-header">
+
+                    <span class="result-icon success">
+                        ✓
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Matching Skills
+                        </h3>
+
+                        <p>
+                            Skills from the job that your resume demonstrates
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="matching-skills"
+                    class="tag-container"
+                ></div>
+
+            </div>
+
+
+            <!-- MISSING SKILLS -->
+
+            <div class="result-card">
+
+                <div class="result-card-header">
+
+                    <span class="result-icon warning">
+                        !
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Missing Skills
+                        </h3>
+
+                        <p>
+                            Relevant requirements not clearly demonstrated
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="missing-skills"
+                    class="tag-container"
+                ></div>
+
+            </div>
+
+
+            <!-- KEYWORDS -->
+
+            <div class="two-column">
+
+                <div class="result-card">
+
+                    <div class="result-card-header">
+
+                        <span class="result-icon success">
+                            ✓
+                        </span>
+
+                        <div>
+
+                            <h3>
+                                Matching Keywords
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="matching-keywords"
+                        class="tag-container"
+                    ></div>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <div class="result-card-header">
+
+                        <span class="result-icon warning">
+                            !
+                        </span>
+
+                        <div>
+
+                            <h3>
+                                Missing Keywords
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="missing-keywords"
+                        class="tag-container"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPERIENCE -->
+
+            <div class="result-card">
+
+                <div class="result-card-header">
+
+                    <span class="result-icon">
+                        ◎
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Experience Match
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <p
+                    id="experience-match"
+                    class="experience-text"
+                ></p>
+
+            </div>
+
+
+            <!-- STRENGTHS -->
+
+            <div class="result-card">
+
+                <div class="result-card-header">
+
+                    <span class="result-icon success">
+                        ✦
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Strengths
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <ul
+                    id="strengths"
+                    class="result-list"
+                ></ul>
+
+            </div>
+
+
+            <!-- RECOMMENDATIONS -->
+
+            <div class="result-card">
+
+                <div class="result-card-header">
+
+                    <span class="result-icon recommendation">
+                        💡
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Recommendations
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <ul
+                    id="recommendations"
+                    class="result-list"
+                ></ul>
+
+            </div>
+
+
+            <!-- NEW ANALYSIS -->
+
+            <button
+                id="new-analysis"
+                class="new-analysis-button"
+            >
+                ← Analyze Another Resume
+            </button>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="/static/ats.js"></script>
+
+</body>
+
+</html>

@@ -185,6 +185,47 @@ Then open:
 
 ```text
 http://127.0.0.1:8000
+
+---
+
+## ☁️ Deploying to Google Cloud Run
+
+This project includes a Dockerfile and CI helpers to deploy to Cloud Run.
+
+Quick local deploy (requires `gcloud` and `docker`):
+
+1. Authenticate and set project:
+
+```bash
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+```
+
+2. Export your secrets in the shell (do not check these into Git):
+
+```bash
+export PROJECT_ID=your-gcp-project-id
+export GROQ_API_KEY="<your_groq_key>"
+export GOOGLE_API_KEY="<your_google_key>"
+export TAVILY_API_KEY="<your_tavily_key>"
+```
+
+3. Run the provided deploy script (uses Cloud Build):
+
+```bash
+bash scripts/deploy_cloud_run.sh
+```
+
+CI (GitHub Actions):
+
+- Create a service account JSON with roles: `Cloud Run Admin`, `Cloud Build Editor`, `Storage Admin`, `Service Account User`, `Artifact Registry Writer`.
+- In your GitHub repo settings -> Secrets, add:
+    - `GCP_SA_KEY` (the service account JSON)
+    - `GCP_PROJECT` (your project id)
+    - `GROQ_API_KEY`, `GOOGLE_API_KEY`, `TAVILY_API_KEY`
+
+Push to `main` to trigger the `.github/workflows/cloud-run.yml` workflow which will build the image and deploy to Cloud Run.
+
 ```
 
 ---

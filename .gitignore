@@ -13,6 +13,9 @@ chroma_db/
 
 # User uploaded PDFs
 data/uploads/
+data/ats/.analysis_cache.json
 
 # IDE
 .vscode/
+.vercel
+.env*

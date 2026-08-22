@@ -2,9 +2,13 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from dotenv import load_dotenv
 
 import os
 import shutil
+
+# Load environment variables from .env file
+load_dotenv()
 
 from src.pdf_loader import load_pdf
 from src.text_splitter import split_documents
@@ -14,7 +18,12 @@ from src.retriever import get_retriever
 from src.chatbot import get_llm
 from src.summarizer import summarize_document
 from src.assistant import handle_question
+from src.file_hash import calculate_file_hash
+from src.vector_store import DB_ROOT
 
+# ATS
+from src.ats.parser import extract_pdf_text
+from src.ats.analyzer import analyze_resume
 
 # --------------------------------------------------
 # FASTAPI APP
@@ -104,6 +113,20 @@ async def upload_pdf(file: UploadFile = File(...)):
     # Split into chunks
     chunks = split_documents(documents)
 
+    if not chunks:
+        try:
+            os.remove(file_path)
+        except OSError:
+            pass
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "This PDF does not contain selectable text. "
+                "Please upload a text-based PDF or run OCR on it first."
+            )
+        )
+
     # Add filename metadata to every chunk.
     # This will be useful later for:
     #
@@ -146,7 +169,182 @@ async def upload_pdf(file: UploadFile = File(...)):
         "chunks": len(chunks),
         "documents": list(documents_store.keys())
     }
+# --------------------------------------------------
+# ATS ANALYSIS
+# --------------------------------------------------
 
+@app.post("/ats/analyze")
+async def ats_analyze(
+    resume: UploadFile = File(...),
+    job_description: UploadFile = File(...)
+):
+    """
+    Analyze a resume against a job description.
+
+    The frontend uploads two PDFs:
+    - resume
+    - job description
+
+    The ATS analyzer extracts their text and performs
+    deterministic scoring.
+    """
+
+    # Make sure the upload directory exists
+    os.makedirs(
+        "data/uploads",
+        exist_ok=True
+    )
+
+    # --------------------------------------------------
+    # Validate file types
+    # --------------------------------------------------
+
+    if not resume.filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=400,
+            detail="Resume must be a PDF file."
+        )
+
+    if not job_description.filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=400,
+            detail="Job description must be a PDF file."
+        )
+
+    # --------------------------------------------------
+    # Create safe filenames
+    # --------------------------------------------------
+
+    resume_filename = (
+        "ats_resume_"
+        + os.path.basename(resume.filename)
+    )
+
+    jd_filename = (
+        "ats_job_description_"
+        + os.path.basename(job_description.filename)
+    )
+
+    resume_path = os.path.join(
+        "data",
+        "uploads",
+        resume_filename
+    )
+
+    jd_path = os.path.join(
+        "data",
+        "uploads",
+        jd_filename
+    )
+
+    try:
+
+        # --------------------------------------------------
+        # Save resume
+        # --------------------------------------------------
+
+        with open(resume_path, "wb") as buffer:
+            shutil.copyfileobj(
+                resume.file,
+                buffer
+            )
+
+        # --------------------------------------------------
+        # Save job description
+        # --------------------------------------------------
+
+        with open(jd_path, "wb") as buffer:
+            shutil.copyfileobj(
+                job_description.file,
+                buffer
+            )
+
+        # --------------------------------------------------
+        # Extract text
+        # --------------------------------------------------
+
+        resume_text = extract_pdf_text(
+            resume_path
+        )
+
+        job_description_text = extract_pdf_text(
+            jd_path
+        )
+
+        if not resume_text.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Could not extract text from the resume PDF."
+            )
+
+        if not job_description_text.strip():
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Could not extract text from the "
+                    "job description PDF."
+                )
+            )
+
+        # --------------------------------------------------
+        # Run ATS analysis
+        # --------------------------------------------------
+
+        result = analyze_resume(
+            resume_text=resume_text,
+            job_description=job_description_text,
+            llm=llm
+        )
+
+        # --------------------------------------------------
+        # Return JSON
+        # --------------------------------------------------
+
+        return result.model_dump()
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        print(
+            f"ATS analysis error: {e}"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "An error occurred while analyzing "
+                "the resume."
+            )
+        )
+
+    finally:
+
+        # --------------------------------------------------
+        # Clean temporary ATS files
+        # --------------------------------------------------
+
+        for path in [
+            resume_path,
+            jd_path
+        ]:
+
+            if os.path.exists(path):
+
+                try:
+                    os.remove(path)
+
+                except OSError:
+                    pass
+                
+# --------------------------------------------------
+# ATS ANALYSIS PAGE
+# --------------------------------------------------
+
+@app.get("/ats-analysis")
+def ats_analysis_page():
+    return FileResponse("static/ats.html")
 
 # --------------------------------------------------
 # GET AVAILABLE DOCUMENTS
@@ -207,13 +405,8 @@ def chat(request: ChatRequest):
 
     global chat_history
 
-    # Without an uploaded PDF, Web Search mode works as a normal web assistant.
-    if request.selected_document not in documents_store:
-
-        if not request.use_web:
-            return {
-                "error": "Please select a valid PDF first or enable Web Search."
-            }
+    # If web search is enabled, use it directly regardless of PDF selection
+    if request.use_web:
 
         result = handle_question(
             question=request.question,
@@ -225,16 +418,12 @@ def chat(request: ChatRequest):
 
         return result
 
-    # A web fallback is performed only after the user confirms it in the UI.
-    if request.search_web and request.use_web:
+    # Without web search, a PDF must be selected
+    if request.selected_document not in documents_store:
 
-        return handle_question(
-            question=request.question,
-            llm=llm,
-            retriever=None,
-            chat_history=chat_history,
-            use_web=True
-        )
+        return {
+            "error": "Please select a valid PDF first or enable Web Search."
+        }
 
     # Get selected PDF information
     selected_pdf = documents_store[
@@ -345,9 +534,19 @@ def delete_document(filename: str):
 
     # Only use the stored upload directory; never trust a filename as a path.
     file_path = os.path.join("data", "uploads", os.path.basename(filename))
+    vector_db_path = None
+
+    if os.path.exists(file_path):
+        vector_db_path = os.path.join(
+            DB_ROOT,
+            calculate_file_hash(file_path)
+        )
 
     if os.path.exists(file_path):
         os.remove(file_path)
+
+    if vector_db_path and os.path.exists(vector_db_path):
+        shutil.rmtree(vector_db_path, ignore_errors=True)
 
     del documents_store[filename]
     chat_history = []

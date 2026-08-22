@@ -21,9 +21,6 @@ const bottomQuestionInput =
 const bottomSendButton =
     document.getElementById("bottom-send-button");
 
-const bottomInputContainer =
-    document.getElementById("bottom-input-container");
-
 const chatMessages =
     document.getElementById("chat-messages");
 
@@ -69,30 +66,25 @@ async function loadDocuments(selectedFilename = null) {
             documentSelect.appendChild(option);
 
             const item = document.createElement("div");
-            const filenameLabel = document.createElement("span");
+            const name = document.createElement("span");
             const deleteButton = document.createElement("button");
 
             item.className = "document-item";
-            filenameLabel.className = "document-name";
-            filenameLabel.textContent = `📄 ${filename}`;
+            name.className = "document-name";
+            name.textContent = `📄 ${filename}`;
+            name.title = filename;
 
             deleteButton.className = "delete-document-button";
             deleteButton.type = "button";
-            deleteButton.title = `Delete ${filename}`;
             deleteButton.setAttribute("aria-label", `Delete ${filename}`);
+            deleteButton.title = "Delete document";
             deleteButton.textContent = "×";
-
-            deleteButton.addEventListener("click", async (event) => {
-                event.stopPropagation();
-                await deleteDocument(filename);
+            deleteButton.addEventListener("click", () => {
+                deleteDocument(filename);
             });
 
-            item.addEventListener("click", () => {
-                documentSelect.value = filename;
-                documentSelect.dispatchEvent(new Event("change"));
-            });
-
-            item.append(filenameLabel, deleteButton);
+            item.appendChild(name);
+            item.appendChild(deleteButton);
 
             documentList.appendChild(item);
 
@@ -125,45 +117,38 @@ async function loadDocuments(selectedFilename = null) {
 }
 
 
-/* =========================================================
-   DELETE DOCUMENT
-========================================================= */
-
 async function deleteDocument(filename) {
-
-    if (!window.confirm(`Delete ${filename}? This cannot be undone.`)) {
+    if (!window.confirm(`Delete ${filename}?`)) {
         return;
     }
 
     try {
-
         const response = await fetch(
             `/documents/${encodeURIComponent(filename)}`,
             { method: "DELETE" }
         );
-
-        const data = await response.json();
+        const responseText = await response.text();
+        const data = responseText ? JSON.parse(responseText) : {};
 
         if (!response.ok) {
-            throw new Error(data.detail || "Failed to delete document");
+            throw new Error(
+                data.detail ||
+                data.error ||
+                `Delete failed (${response.status})`
+            );
         }
 
         await loadDocuments();
-
-        if (data.documents.length === 0) {
-            documentReady = false;
-            fileInfo.hidden = true;
-            statusText.textContent = "No document";
-            bottomInputContainer.hidden = true;
-        } else {
-            statusText.textContent = "● Document ready";
-            fileInfo.hidden = false;
-            fileInfo.textContent = `📄 ${documentSelect.value}`;
-        }
-
+        fileInfo.textContent = "";
+        statusText.textContent = data.documents.length
+            ? "Select a document"
+            : "No document";
+        questionInput.placeholder =
+            "Upload a PDF to start asking questions...";
     } catch (error) {
-        console.error("Document deletion failed:", error);
+        fileInfo.textContent = error.message || "Unable to delete document.";
         statusText.textContent = "Delete failed";
+        console.error("Document deletion failed:", error);
     }
 }
 
@@ -207,15 +192,24 @@ pdfUpload.addEventListener("change", async () => {
         );
 
 
-        const data =
-            await response.json();
+        const responseText = await response.text();
+        let data = {};
+
+        try {
+            data = responseText ? JSON.parse(responseText) : {};
+        } catch (parseError) {
+            throw new Error(
+                `Upload failed (${response.status}): ${responseText.slice(0, 160)}`
+            );
+        }
 
 
         if (!response.ok) {
 
             throw new Error(
+                data.detail ||
                 data.error ||
-                "Upload failed"
+                `Upload failed (${response.status})`
             );
         }
 
@@ -232,8 +226,6 @@ pdfUpload.addEventListener("change", async () => {
         fileInfo.textContent =
             `📄 ${data.filename}`;
 
-        fileInfo.hidden = false;
-
         statusText.textContent =
             "● Document ready";
 
@@ -241,9 +233,7 @@ pdfUpload.addEventListener("change", async () => {
         setInputsEnabled(true);
 
 
-        questionInput.placeholder = webSearchEnabled
-            ? "Ask a question to search the web..."
-            : "Ask anything about your document...";
+        questionInput.placeholder ="Ask anything about your document...";
 
 
 
@@ -265,6 +255,7 @@ pdfUpload.addEventListener("change", async () => {
             "Upload failed";
 
         fileInfo.textContent =
+            error.message ||
             "Something went wrong while processing the PDF.";
 
 
@@ -307,8 +298,6 @@ documentSelect.addEventListener("change", () => {
     fileInfo.textContent =
         `📄 ${selectedDocument}`;
 
-    fileInfo.hidden = false;
-
     questionInput.placeholder =
         "Ask anything about your document...";
 
@@ -318,9 +307,9 @@ documentSelect.addEventListener("change", () => {
    SEND QUESTION
 ========================================================= */
 
-async function sendQuestion(question = null, searchWeb = false) {
+async function sendQuestion(question = null) {
 
-    if (!documentReady && !webSearchEnabled) {
+    if (!documentReady) {
         return;
     }
 
@@ -335,7 +324,7 @@ async function sendQuestion(question = null, searchWeb = false) {
     }
 
 
-    if (!webSearchEnabled && !documentSelect.value) {
+    if (!documentSelect.value) {
 
         addMessage(
             "Assistant",
@@ -347,16 +336,18 @@ async function sendQuestion(question = null, searchWeb = false) {
     }
 
 
-    removeWelcomeMessage();
-
-    bottomInputContainer.hidden = false;
+    // removeWelcomeMessage();
+    document.getElementById("bottom-composer").style.display = "block";
+    document.querySelector(".hero-composer").style.display = "none";
+    document.querySelector(".suggestion-grid").style.display = "none";
+    // document.getElementById("chat-composer").classList.remove("hidden");
 
     questionInput.value = "";
     bottomQuestionInput.value = "";
 
     addMessage(
         "You",
-        searchWeb ? "Yes, search the web." : activeQuestion,
+        activeQuestion,
         "user-message"
     );
 
@@ -392,10 +383,7 @@ async function sendQuestion(question = null, searchWeb = false) {
                         documentSelect.value,
 
                     use_web:
-                        webSearchEnabled,
-
-                    search_web:
-                        searchWeb
+                        webSearchEnabled
                 })
             }
         );
@@ -405,14 +393,14 @@ async function sendQuestion(question = null, searchWeb = false) {
             await response.json();
 
 
-        const messageContent = loadingMessage.querySelector(".message-content");
-
-        messageContent.textContent =
-            data.answer || data.error || "Something went wrong.";
-
-        if (data.needs_web_confirmation) {
-            addWebSearchConfirmation(loadingMessage, activeQuestion);
-        }
+        loadingMessage
+            .querySelector(
+                ".message-content"
+            )
+            .textContent =
+                data.answer ||
+                data.error ||
+                "Something went wrong.";
 
 
     } catch (error) {
@@ -434,6 +422,7 @@ async function sendQuestion(question = null, searchWeb = false) {
     } finally {
 
         setInputsEnabled(true);
+        bottomQuestionInput.focus();
         scrollToBottom();
     }
 }
@@ -500,32 +489,6 @@ function addMessage(
 }
 
 
-function addWebSearchConfirmation(message, question) {
-
-    const actions = document.createElement("div");
-    const confirmButton = document.createElement("button");
-    const cancelButton = document.createElement("button");
-
-    actions.className = "web-search-confirmation";
-    confirmButton.type = "button";
-    confirmButton.textContent = "Search the web";
-    cancelButton.type = "button";
-    cancelButton.textContent = "No, keep PDF mode";
-
-    confirmButton.addEventListener("click", () => {
-        actions.remove();
-        sendQuestion(question, true);
-    });
-
-    cancelButton.addEventListener("click", () => {
-        actions.remove();
-    });
-
-    actions.append(confirmButton, cancelButton);
-    message.querySelector(".message-content").appendChild(actions);
-}
-
-
 /* =========================================================
    INPUT STATE
 ========================================================= */
@@ -553,7 +516,7 @@ function setInputsEnabled(enabled) {
     });
 
     if (documentSelect)
-        documentSelect.disabled = !documentReady;
+        documentSelect.disabled = !enabled;
 }
 
 
@@ -628,16 +591,36 @@ questionInput.addEventListener(
 bottomSendButton.addEventListener(
     "click",
     () => {
-        sendQuestion(bottomQuestionInput.value.trim());
+
+        const question =
+            bottomQuestionInput.value.trim();
+
+        sendQuestion(
+            question
+        );
     }
 );
+
 
 bottomQuestionInput.addEventListener(
     "keydown",
     (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
             event.preventDefault();
-            sendQuestion(bottomQuestionInput.value.trim());
+
+            const question =
+                bottomQuestionInput
+                    .value
+                    .trim();
+
+            sendQuestion(
+                question
+            );
         }
     }
 );
@@ -719,8 +702,6 @@ newChatButton.addEventListener("click", async () => {
                 welcome.style.display = "flex";
             }
 
-            bottomInputContainer.hidden = true;
-
             chatMessages
                 .querySelectorAll(".message")
                 .forEach(message => message.remove());
@@ -733,7 +714,7 @@ newChatButton.addEventListener("click", async () => {
 
 
             questionInput.value = "";
-            bottomQuestionInput.value = "";
+            // bottomQuestionInput.value = "";
             if (documentReady) {
                 questionInput.focus();
             }
@@ -753,41 +734,10 @@ webSearchToggle.addEventListener("click", () => {
 
     webSearchEnabled = !webSearchEnabled;
 
-    const canAskQuestion = documentReady || webSearchEnabled;
-
     webSearchToggle.classList.toggle(
         "active",
         webSearchEnabled
     );
-
-    webSearchToggle.setAttribute(
-        "aria-pressed",
-        String(webSearchEnabled)
-    );
-
-    webSearchToggle.textContent = webSearchEnabled
-        ? "🌐 Web Search On"
-        : "🌐 Web Search";
-
-    questionInput.placeholder = webSearchEnabled
-        ? "Ask a question to search the web..."
-        : documentReady
-            ? "Ask anything about your document..."
-            : "Upload a PDF to start asking questions...";
-
-    setInputsEnabled(canAskQuestion);
-
-    statusText.textContent = webSearchEnabled
-        ? documentReady
-            ? "● Document ready · Web fallback enabled"
-            : "● Web search enabled"
-        : documentReady
-            ? "● Document ready"
-            : "No document";
-
-    if (webSearchEnabled) {
-        questionInput.focus();
-    }
 
 });
 

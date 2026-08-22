@@ -1,0 +1,16 @@
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+env/
+build/
+dist/
+.pytest_cache
+.mypy_cache
+chroma_db/
+data/uploads/
+.venv/
+.env
+.DS_Store

@@ -3,6 +3,11 @@ from langchain_community.retrievers import BM25Retriever
 
 class HybridRetriever:
     def __init__(self, vector_store, chunks):
+        if not chunks:
+            raise ValueError(
+                "Cannot create a retriever from an empty document."
+            )
+
         # Semantic search
         self.vector_retriever = vector_store.as_retriever(
             search_kwargs={"k": 4}
