@@ -78,6 +78,13 @@ chat_history = []
 def home():
     return FileResponse("static/index.html")
 
+# --------------------------------------------------
+# HEALTH CHECK (for uptime pinger)
+# --------------------------------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 
 # --------------------------------------------------
 # PDF UPLOAD
