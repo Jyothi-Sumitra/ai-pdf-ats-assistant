@@ -26,7 +26,7 @@ The application uses **Retrieval-Augmented Generation (RAG)** to retrieve releva
 
 ## 🖼️ Preview
 
-![AI PDF Assistant Preview](assets/preview.png)
+![AI PDF Assistant Preview](assets/pdf.png)
 
 ---
 

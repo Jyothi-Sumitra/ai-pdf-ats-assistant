@@ -1,3 +1,23 @@
+// Shows a "waking up" banner if the backend is cold-starting
+async function checkServerAwake() {
+  const banner = document.getElementById("wake-banner");
+  const start = Date.now();
+
+  try {
+    const res = await fetch("/health");
+    const elapsed = Date.now() - start;
+
+    // If it took more than ~2s, it was likely a cold start
+    if (elapsed > 2000 && banner) {
+      banner.style.display = "none";
+    }
+  } catch (err) {
+    if (banner) banner.style.display = "block";
+  }
+}
+
+// Call this as soon as the page loads
+window.addEventListener("DOMContentLoaded", () => {
 // Call this as soon as the page loads
 window.addEventListener("DOMContentLoaded", () => {
   const banner = document.createElement("div");
