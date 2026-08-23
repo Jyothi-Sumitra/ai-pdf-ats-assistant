@@ -1,3 +1,20 @@
+// Call this as soon as the page loads
+window.addEventListener("DOMContentLoaded", () => {
+  const banner = document.createElement("div");
+  banner.id = "wake-banner";
+  banner.textContent = "⏳ Waking up the server — this can take up to a minute on first load...";
+  banner.style.cssText =
+    "position:fixed;top:0;left:0;right:0;background:#fff3cd;color:#856404;" +
+    "padding:10px;text-align:center;font-family:sans-serif;z-index:9999;display:none;";
+  document.body.prepend(banner);
+
+  // Show banner immediately, then hide once server responds
+  banner.style.display = "block";
+  fetch("/health")
+    .then(() => { banner.style.display = "none"; })
+    .catch(() => { /* keep banner visible, will retry naturally on next action */ });
+});
+
 /* =========================================================
    DOM ELEMENTS
 ========================================================= */
