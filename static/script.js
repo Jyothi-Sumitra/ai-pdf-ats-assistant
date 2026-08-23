@@ -17,8 +17,7 @@ async function checkServerAwake() {
 }
 
 // Call this as soon as the page loads
-window.addEventListener("DOMContentLoaded", () => {
-// Call this as soon as the page loads
+
 window.addEventListener("DOMContentLoaded", () => {
   const banner = document.createElement("div");
   banner.id = "wake-banner";
