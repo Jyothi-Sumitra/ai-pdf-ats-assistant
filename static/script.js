@@ -16,11 +16,11 @@ async function checkServerAwake() {
   }
 }
 
-// Call this as soon as the page loads
-<<<<<<< HEAD
+// // Call this as soon as the page loads
+// <<<<<<< HEAD
 
-=======
->>>>>>> 4f7b8ad (Fix PDF upload script)
+// =======
+// >>>>>>> 4f7b8ad (Fix PDF upload script)
 window.addEventListener("DOMContentLoaded", () => {
   const banner = document.createElement("div");
   banner.id = "wake-banner";
