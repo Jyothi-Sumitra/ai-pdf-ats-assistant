@@ -4,7 +4,7 @@ An AI-powered PDF assistant that allows users to upload documents and interact w
 
 The application uses **Retrieval-Augmented Generation (RAG)** to retrieve relevant information from uploaded PDFs and generate grounded answers with source page citations.
 
-🌐 **Live Demo:** https://ai-pdf-assistant-cdly.onrender.com/
+🌐 **Live Demo:** https://ai-pdf-ats-assistant-jyothi-sumitras-projects.vercel.app
 
 ---
 
@@ -20,7 +20,7 @@ The application uses **Retrieval-Augmented Generation (RAG)** to retrieve releva
 - ⚡ Cached vector embeddings for previously processed documents
 - 🌐 FastAPI-powered backend
 - 🎨 Responsive web interface
-- ☁️ Deployed on Render
+- ☁️ Deployed on Vercel
 
 ---
 
@@ -100,7 +100,7 @@ The application also maintains conversational context so follow-up questions can
 
 ### Deployment
 
-- Render
+- Vercel
 
 ---
 
@@ -110,7 +110,6 @@ The application also maintains conversational context so follow-up questions can
 ai-pdf-assistant/
 │
 ├── data/
-│
 ├── src/
 │   ├── chatbot.py
 │   ├── embeddings.py
@@ -142,8 +141,8 @@ ai-pdf-assistant/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Jyothi-Sumitra/ai-pdf-assistant.git
-cd ai-pdf-assistant
+git clone https://github.com/Jyothi-Sumitra/ai-pdf-ats-assistant.git
+cd ai-pdf-ats-assistant
 ```
 
 ### 2. Create a virtual environment
@@ -171,6 +170,7 @@ Create a `.env` file in the project root:
 ```env
 GROQ_API_KEY=your_groq_api_key
 GOOGLE_API_KEY=your_google_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
 
 > Never commit your `.env` file or API keys to GitHub.
@@ -185,48 +185,25 @@ Then open:
 
 ```text
 http://127.0.0.1:8000
+```
 
 ---
 
-## ☁️ Deploying to Google Cloud Run
+## ☁️ Deploying to Vercel
 
-This project includes a Dockerfile and CI helpers to deploy to Cloud Run.
+The FastAPI application is configured for Vercel using `@vercel/python`.
 
-Quick local deploy (requires `gcloud` and `docker`):
+For the deployed application, configure the required environment variables in the Vercel project settings:
 
-1. Authenticate and set project:
+- `GROQ_API_KEY`
+- `GOOGLE_API_KEY`
+- `TAVILY_API_KEY`
 
-```bash
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-```
+The production deployment is available at:
 
-2. Export your secrets in the shell (do not check these into Git):
+**https://ai-pdf-ats-assistant-jyothi-sumitras-projects.vercel.app**
 
-```bash
-export PROJECT_ID=your-gcp-project-id
-export GROQ_API_KEY="<your_groq_key>"
-export GOOGLE_API_KEY="<your_google_key>"
-export TAVILY_API_KEY="<your_tavily_key>"
-```
-
-3. Run the provided deploy script (uses Cloud Build):
-
-```bash
-bash scripts/deploy_cloud_run.sh
-```
-
-CI (GitHub Actions):
-
-- Create a service account JSON with roles: `Cloud Run Admin`, `Cloud Build Editor`, `Storage Admin`, `Service Account User`, `Artifact Registry Writer`.
-- In your GitHub repo settings -> Secrets, add:
-    - `GCP_SA_KEY` (the service account JSON)
-    - `GCP_PROJECT` (your project id)
-    - `GROQ_API_KEY`, `GOOGLE_API_KEY`, `TAVILY_API_KEY`
-
-Push to `main` to trigger the `.github/workflows/cloud-run.yml` workflow which will build the image and deploy to Cloud Run.
-
-```
+> Note: the current application uses local filesystem storage and in-memory state for uploaded documents and ChromaDB. Vercel's serverless environment is ephemeral, so persistent production document storage would require an external persistent storage/vector database.
 
 ---
 
@@ -258,16 +235,6 @@ Uploaded documents and generated vector database files are also excluded from th
 
 ---
 
-## 🌐 Live Demo
-
-Try the deployed application:
-
-**https://ai-pdf-assistant-cdly.onrender.com/**
-
-> The application is hosted on Render's free tier, so the first request after a period of inactivity may take additional time while the service starts.
-
----
-
 ## 📌 Future Improvements
 
 Potential future improvements include:
@@ -277,6 +244,7 @@ Potential future improvements include:
 - Improved reranking and retrieval evaluation
 - Persistent user sessions
 - Support for additional document formats
+- Persistent external vector storage for serverless deployments
 
 ---
 
